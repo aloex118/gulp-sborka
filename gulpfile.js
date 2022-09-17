@@ -1,6 +1,7 @@
+// Fonts, JQuery, Bootstrap, Webp
+// Подключенные плагины
 const gulp = require('gulp');
 const del = require('del');
-const less = require('gulp-less');
 const rename = require('gulp-rename');
 const cleanCSS = require('gulp-clean-css');
 const sass = require('gulp-sass')(require('sass'));
@@ -17,6 +18,7 @@ const gulppug = require('gulp-pug');
 const browserSync = require('browser-sync');
 const browsersync = require('browser-sync').create();
 
+// Пути
 const path = {
     html: {
         src: 'src/*.html',
@@ -24,7 +26,7 @@ const path = {
     },
 
     styles: {
-        src: ['src/styles/**/*.less', 'src/styles/**/*.sass', 'src/styles/**/*.scss'],
+        src: ['src/styles/**/*.sass', 'src/styles/**/*.scss'],
         dest: 'public/css'
     },
 
@@ -44,10 +46,12 @@ const path = {
     }
 }
 
+// Очистка
 function clean() {
     return del(['dist/*', '!dist/img'])
 }
 
+// HTML
 function html() {
     return gulp.src(path.html.src)
     .pipe(htmlmin({ collapseWhitespace: true }))
@@ -56,6 +60,7 @@ function html() {
     .pipe(browsersync.stream())
 }
 
+// Pug
 function pug() {
     return gulp.src(path.pug.src)
     .pipe(gulppug())
@@ -64,6 +69,7 @@ function pug() {
     .pipe(browsersync.stream())
 }
 
+// Картинки
 function img() {
     return gulp.src(path.img.src)
     .pipe(newer(path.img.dest))
@@ -74,10 +80,10 @@ function img() {
     .pipe(gulp.dest(path.img.dest))
 }
 
+// Обработка стилей
 function styles() {
     return gulp.src(path.styles.src)
     .pipe(sourcemaps.init())
-    .pipe(less())
     .pipe(sass().on('error', sass.logError))
     .pipe(autoprefixer({
         cascade: false
@@ -95,6 +101,7 @@ function styles() {
     .pipe(browsersync.stream())
 }
 
+// Обработка JS
 function scripts() {
     return gulp.src(path.scripts.src)
     .pipe(sourcemaps.init())
@@ -109,6 +116,7 @@ function scripts() {
     .pipe(browsersync.stream())
 }
 
+// Наблюдатель
 function watch() {
     browsersync.init({
         server: {
@@ -122,14 +130,10 @@ function watch() {
     gulp.watch(path.img.src, img)
 }
 
+// Сборка
 const build = gulp.series(clean, html, gulp.parallel(styles, scripts, img), watch)
 
-exports.clean = clean
-exports.img = img
+// Отдельные команды
 exports.pug = pug
-exports.html = html
-exports.styles = styles
-exports.scripts = scripts
-exports.watch = watch
 exports.build = build
 exports.default = build

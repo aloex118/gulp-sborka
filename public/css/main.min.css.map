@@ -1,1 +1,0 @@
-{"version":3,"sources":["main.sass"],"names":[],"mappings":"AAGA,KACE,KAAA,KAAA,MAAA,WACA,MAAA","file":"main.min.css","sourcesContent":["$font-stack: Arial, sans-serif\r\n$primary-color: #333\r\n\r\nbody \r\n  font: 100% $font-stack\r\n  color: $primary-color"]}

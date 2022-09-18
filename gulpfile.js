@@ -3,6 +3,8 @@
 const gulp = require('gulp');
 const del = require('del');
 const rename = require('gulp-rename');
+const webp = require('gulp-webp');
+const fonter = require('gulp-fonter');
 const cleanCSS = require('gulp-clean-css');
 const sass = require('gulp-sass')(require('sass'));
 const babel = require('gulp-babel');
@@ -43,6 +45,11 @@ const path = {
     pug: {
         src: 'src/*.pug',
         dest: 'public/'
+    },
+
+    font: {
+        src: ['src/font/**/*.eot', 'src/font/**/*.ttf', 'src/font/**/*.otf', 'src/font/**/*.otc', 'src/font/**/*.ttc', 'src/font/**/*.woff', 'src/font/**/*.woff2', 'src/font/**/*.svg'],
+        dest: 'public/font'
     }
 }
 
@@ -58,6 +65,16 @@ function html() {
     .pipe(size())
     .pipe(gulp.dest(path.html.dest))
     .pipe(browsersync.stream())
+}
+
+// Font
+function font() {
+    return gulp.src(path.font.src)
+    .pipe(newer(path.font.dest))
+    .pipe(fonter({
+        formats: ['tts', 'woff', 'woff2', 'eot', 'svg']
+    }))
+    .pipe(gulp.dest(path.font.dest))
 }
 
 // Pug
@@ -76,6 +93,10 @@ function img() {
     .pipe(imagemin({
         progressive: true
     }))
+    .pipe(webp())
+    .pipe(gulp.dest(path.img.dest))
+    .pipe(gulp.src(path.img.src))
+    .pipe(newer(path.img.dest))
     .pipe(size())
     .pipe(gulp.dest(path.img.dest))
 }
@@ -127,11 +148,12 @@ function watch() {
     gulp.watch(path.html.src, html)
     gulp.watch(path.styles.src, styles)
     gulp.watch(path.scripts.src, scripts)
+    gulp.watch(path.font.src, font)
     gulp.watch(path.img.src, img)
 }
 
 // Сборка
-const build = gulp.series(clean, html, gulp.parallel(styles, scripts, img), watch)
+const build = gulp.series(clean, html, gulp.parallel(styles, scripts, img, font), watch)
 
 // Отдельные команды
 exports.pug = pug
